@@ -34,7 +34,7 @@ program main
   use, intrinsic :: iso_fortran_env
   use prk
   implicit none
-  integer :: me, np, p
+  integer :: me, np
   integer :: err
   ! problem definition
   integer(kind=INT32) :: iterations
@@ -48,7 +48,6 @@ program main
   integer(kind=INT64) :: i
   integer(kind=INT32) :: k
   real(kind=REAL64) ::  asum, ar, br, cr
-  real(kind=REAL64) ::  co_asum[*]
   real(kind=REAL64) ::  t0, t1, nstream_time, avgtime
   real(kind=REAL64), parameter ::  epsilon=1.D-8
 
@@ -125,15 +124,7 @@ program main
     asum = asum + abs(A(i)-ar)
   enddo
 
-  ! reduction via gather
-  co_asum[me] = asum
-  sync all
-  asum = 0
-  if (me.eq.1) then
-    do p=1,np
-      asum = asum + co_asum[p]
-    enddo
-  endif
+  call co_sum(asum)
 
   deallocate( A,B,C )
 
