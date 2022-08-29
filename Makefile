@@ -6,13 +6,16 @@ CAFCFLAGS = -fcoarray=single -Wall -O2
 DCFC      = nvfortran
 DCFCFLAGS = -stdpar=gpu -O2
 
-all: main.x
+all: nstream-coarray.x
 
-main.x: main.o
+%.x: %.o prk_mod.o
 	$(CAFC) $(CAFCFLAGS) $^ -o $@
 
-main.o: main.F90
-	$(CAFC) $(CAFCFLAGS) -c $^ -o $@
+%.o: %.F90 prk.mod
+	$(CAFC) $(CAFCFLAGS) -c $< -o $@
+
+prk.mod prk_mod.o: prk_mod.F90
+	$(CAFC) $(CAFCFLAGS) -c $< -o prk_mod.o
 
 clean:
 	-rm -f *.o *.x *.mod
