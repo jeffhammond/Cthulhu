@@ -39,8 +39,6 @@ program main
   ! problem definition
   integer(kind=INT32) :: iterations
   integer(kind=INT64) :: length, offset
-  integer(kind=INT32) :: co_iterations[*]
-  integer(kind=INT64) :: co_length[*]
   real(kind=REAL64), allocatable ::  A(:)[:]
   real(kind=REAL64), allocatable ::  B(:)[:]
   real(kind=REAL64), allocatable ::  C(:)[:]
@@ -64,26 +62,15 @@ program main
   if (me.eq.1) then
     write(*,'(a25)') 'Parallel Research Kernels'
     write(*,'(a48)') 'Fortran coarray STREAM triad: A = B + scalar * C'
-
     call prk_get_arguments('nstream',iterations=iterations,length=length,offset=offset)
-
     write(*,'(a23,i12)') 'Number of images     = ', np
     write(*,'(a23,i12)') 'Number of iterations = ', iterations
     write(*,'(a23,i12)') 'Vector length        = ', length
     write(*,'(a23,i12)') 'Offset               = ', offset
+  endif
 
-    ! co_broadcast is 2018 and not available in all coarray implementations
-    do p=1,np
-      co_iterations[p] = iterations
-      co_length[p]     = length
-    enddo
-  endif
-  sync all
-  if (me.ne.1) then
-    ! copy broadcast inputs to local variables
-    iterations = co_iterations[this_image()]
-    length     = co_length[this_image()]
-  endif
+  call co_broadcast(iterations,1)
+  call co_broadcast(length,1)
 
   ! ********************************************************************
   ! ** Allocate space and perform the computation
