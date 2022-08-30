@@ -6,21 +6,20 @@ CAFCFLAGS += -Wno-c-binding-type
 CAFLIBS    = -lgfortran
 
 # Do Concurrent compiler
+TARGET     = multicore
 NVHPCVERS  = 22.7
 DCFC       = nvfortran
-DCFCFLAGS  = -stdpar=gpu -O2 -fPIE
-#DCFCLIBS   = -L/opt/nvidia/hpc_sdk/Linux_$$(uname -m)/$(NVHPCVERS)/compilers/lib/ \
-#             -lacccuda -lacchost -laccdevice -lnvomp -lnvc -lnvcpumath -laccdevaux
-#DCFCLIBS  += -L/opt/nvidia/hpc_sdk/Linux_x86_64/22.7/REDIST/cuda/11.7/targets/x86_64-linux/lib/stubs -lcuda
-DCLIBS      = -fortranlibs
+DCFCFLAGS  = -stdpar=$(TARGET) -O2 -fPIE
+DCLIBS     = -fortranlibs # NVC only
 
 # C compiler for linking - use NVHPC since it knows all the GPU library dependencies
 CC         = nvc
-CFLAGS     = -O2 -Wall -acc=gpu
+CFLAGS     = -O2 -Wall -acc=$(TARGET)
 
 all: nstream-coarray.x
 
-nstream-coarray.x: nstream-coarray.o prk_mod.o nstream-kernel-interfaces.o nstream-kernel-implementations.o
+nstream-coarray.x: nstream-coarray.o prk_mod.o nstream-kernel-interfaces.o \
+		   nstream-kernel-implementations.o nstream-trampoline.o
 	$(CC) $(CFLAGS) $^ $(DCFCLIBS) $(CAFLIBS) -o $@
 
 nstream-coarray.o: nstream-coarray.F90 prk.mod nski.mod
@@ -34,6 +33,9 @@ nstream-kernel-interfaces.o nski.mod: nstream-kernel-interfaces.F90
 
 nstream-kernel-implementations.o: nstream-kernel-implementations.F90
 	$(DCFC) $(DCFCFLAGS) -c $< -o $@
+
+nstream-trampoline.o: nstream-trampoline.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	-rm -f *.o *.x *.mod

@@ -67,9 +67,12 @@ program main
       t0 = prk_get_wtime()
     endif
 
-    do concurrent (i=1:length)
-      A(i) = A(i) + B(i) + scalar * C(i)
-    enddo
+    !do concurrent (i=1:length)
+    !  A(i) = A(i) + B(i) + scalar * C(i)
+    !enddo
+    !call nstream_length(length,scalar,A,B,C)
+    !call nstream_star(length,scalar,A,B,C)
+    call nstream_colon_trampoline(length,scalar,A,B,C)
 
   enddo
 
