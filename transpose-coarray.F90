@@ -14,7 +14,8 @@ program main
   integer(kind=INT32) ::  order                     ! order of a the matrix
   real(kind=REAL64), allocatable ::  A(:,:)[:]      ! buffer to hold original matrix
   real(kind=REAL64), allocatable ::  B(:,:)[:]      ! buffer to hold transposed matrix
-  real(kind=REAL64), allocatable ::  T(:,:)         ! temporary to hold tile
+  real(kind=REAL64), allocatable ::  TA(:,:)        ! temporary to hold tile
+  real(kind=REAL64), allocatable ::  TB(:,:)        ! temporary to hold tile
   integer(kind=INT64) ::  bytes                     ! combined size of matrices
   ! distributed data helpers
   integer(kind=INT32) :: block_order                ! columns per PE = order/np
@@ -78,7 +79,8 @@ program main
   ! ** Allocate space for the input and transpose matrix
   ! ********************************************************************
 
-  allocate( A(order,block_order)[*], B(order,block_order)[*], T(block_order,block_order), stat=err)
+  allocate( A(order,block_order)[*], B(order,block_order)[*], &
+            TA(block_order,block_order), TB(block_order,block_order), stat=err)
   if (err .ne. 0) then
     write(6,'(a20,i3,a10,i5)') 'allocation returned ',err,' at image ',me
     stop 1
@@ -118,17 +120,16 @@ program main
       row_start = me*block_order
       col_start = p*block_order
       ! Step 1: Gather A tile from remote image
-      T(:,:) = A(row_start+1:row_start+block_order,:)[p+1]
+      TA(:,:) = A(row_start+1:row_start+block_order,:)[p+1]
       ! Step 2: Transpose tile into B matrix
-#if 0
-      do j=1,block_order
-        do i=1,block_order
-          B(col_start+i,j) = B(col_start+i,j) + T(j,i)
-        enddo
-      enddo
-#else
-      call transpose_order(order,block_order,col_start,T,B)
-#endif
+      !do j=1,block_order
+      !  do i=1,block_order
+      !    B(col_start+i,j) = B(col_start+i,j) + TA(j,i)
+      !  enddo
+      !enddo
+      TB(:,:) = B(col_start+1:col_start+block_order,1:block_order)
+      call transpose_colon_trampoline(block_order,TA,TB)
+      B(col_start+1:col_start+block_order,1:block_order) = TB(:,:)
     enddo
     sync all
     ! Step 3: Update A matrix
@@ -144,7 +145,7 @@ program main
   t1 = prk_get_wtime()
   trans_time = t1 - t0
 
-  deallocate( T )
+  deallocate( TA, TB )
 
   ! ********************************************************************
   ! ** Analyze and output results.

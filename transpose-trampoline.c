@@ -7,27 +7,17 @@
 
 #include "trampoline.h"
 
-// declaration of the Fortran subroutine we are going to call
-void transpose_order(int64_t order, int64_t block_order, int64_t col_start,
-                     double * restrict T, double * restrict B);
-
 // NVHPC Fortran calling convention for arrays
-void transpose_colon(int64_t order, int64_t block_order, int64_t col_start,
-                     double * restrict T, double * restrict B,
-                     F90_Desc_la * pT, F90_Desc_la * pB);
+void transpose_colon(int32_t block_order,
+                     double * restrict TA, double * restrict TB,
+                     F90_Desc_la * pTA, F90_Desc_la * pTB);
 
-void transpose_colon_trampoline(int64_t order, int64_t block_order, int64_t col_start,
-                              CFI_cdesc_t * dT, CFI_cdesc_t * dB)
+void transpose_colon_trampoline(int32_t block_order, CFI_cdesc_t * dTA, CFI_cdesc_t * dTB)
 {
-    double * restrict T = dT->base_addr;
-    double * restrict B = dB->base_addr;
-#if 1
-    transpose_order(order, block_order, col_start, T, B);
-#else
-    F90_Desc_la pA={0}, pB={0}, pC={0};
-    cfi_to_pgi_desc(dA,&pA);
-    cfi_to_pgi_desc(dB,&pB);
-    cfi_to_pgi_desc(dC,&pC);
-    transpose_colon(order, scalar, A, B, C, &pA, &pB, &pC);
-#endif
+    double * restrict TA = dTA->base_addr;
+    double * restrict TB = dTB->base_addr;
+    F90_Desc_la pTA={0}, pTB={0};
+    cfi_to_pgi_desc(dTA,&pTA);
+    cfi_to_pgi_desc(dTB,&pTB);
+    transpose_colon(block_order, TA, TB, &pTA, &pTB);
 }

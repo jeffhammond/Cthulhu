@@ -3,6 +3,7 @@ subroutine nstream_length(length,scalar,A,B,C) bind(C)
     integer(kind=INT64), value :: length
     real(kind=REAL64), value :: scalar
     real(kind=REAL64), dimension(length) :: A,B,C
+    integer(kind=INT64) :: i
     do concurrent (i=1:length)
       A(i) = A(i) + B(i) + scalar * C(i)
     enddo
@@ -13,6 +14,7 @@ subroutine nstream_star(length,scalar,A,B,C) bind(C)
     integer(kind=INT64), value :: length
     real(kind=REAL64), value :: scalar
     real(kind=REAL64), dimension(*) :: A,B,C
+    integer(kind=INT64) :: i
     do concurrent (i=1:length)
       A(i) = A(i) + B(i) + scalar * C(i)
     enddo
@@ -23,6 +25,7 @@ subroutine nstream_colon(length,scalar,A,B,C) bind(C)
     integer(kind=INT64), value :: length
     real(kind=REAL64), value :: scalar
     real(kind=REAL64), dimension(:) :: A,B,C
+    integer(kind=INT64) :: i
 #if 0
     print*,'nstream_colon:',length
     print*,'nstream_colon:',scalar
