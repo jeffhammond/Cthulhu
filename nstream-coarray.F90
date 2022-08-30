@@ -63,14 +63,15 @@ program main
 
   do k=0,iterations
     if (k.eq.1) then
-      sync all ! barrier
+      sync all
       t0 = prk_get_wtime()
     endif
 
     do concurrent (i=1:length)
       A(i) = A(i) + B(i) + scalar * C(i)
     enddo
-  enddo ! iterations
+
+  enddo
 
   sync all
   t1 = prk_get_wtime()
