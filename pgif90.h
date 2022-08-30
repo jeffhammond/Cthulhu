@@ -9,6 +9,9 @@
  *
  */
 
+#ifndef PGIF90_H_
+#define PGIF90_H_
+
 // from /opt/nvidia/hpc_sdk/Linux_x86_64/22.7/compilers/include_acc/nvhpc_cuda_runtime.h
 
 #define MAXDIMS 7
@@ -35,3 +38,5 @@ typedef struct F90_Desc_la {
   long long *unused;
   struct F90_DescDim_la dim[MAXDIMS];
 } F90_Desc_la;
+
+#endif // PGIF90_H_

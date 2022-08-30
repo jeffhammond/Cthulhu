@@ -39,7 +39,7 @@ nstream-kernel-interfaces.o nski.mod: nstream-kernel-interfaces.F90
 nstream-kernel-implementations.o: nstream-kernel-implementations.F90
 	$(DCFC) $(DCFCFLAGS) -c $< -o $@
 
-nstream-trampoline.o: nstream-trampoline.c
+nstream-trampoline.o: nstream-trampoline.c trampoline.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
