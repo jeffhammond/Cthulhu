@@ -1,6 +1,7 @@
 program main
   use, intrinsic :: iso_fortran_env
   use prk
+  use nski
   implicit none
   integer :: me, np
   integer :: err
