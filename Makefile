@@ -7,8 +7,8 @@ CAFCFLAGS += -Wno-c-binding-type
 CAFLIBS    = -lgfortran
 
 # Do Concurrent compiler
-TARGET     = multicore
-NVHPCVERS  = 22.7
+TARGET     = gpu
+NVHPCVERS  = 22.11
 DCFC       = nvfortran
 DCFCFLAGS  = -O2 -fPIE
 DCFCFLAGS += -g
