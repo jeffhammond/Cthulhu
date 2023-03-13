@@ -13,15 +13,6 @@
 
 #define MAXDIMS 7
 
-#define POINT(type, name) type *name
-
-typedef long long __INT_T;
-
-typedef struct F90_Desc F90_Desc;
-typedef struct F90_DescDim F90_DescDim;
-typedef struct DIST_Desc DIST_Desc;
-typedef struct DIST_DescDim DIST_DescDim;
-
 /** \brief Fortran descriptor dimension info 
  *
  * Each F90_Desc structure below has up to \ref MAXDIMS number of F90_DescDim
@@ -50,17 +41,13 @@ typedef struct DIST_DescDim DIST_DescDim;
  * The \ref ubound field is the upperbound of the dimension.
  */
 struct F90_DescDim {/* descriptor dimension info */
-
-  __INT_T lbound;  /**< (1) lower bound */
-  __INT_T extent;  /**< (2) array extent */
-  __INT_T sstride; /**< (3) reserved */
-  __INT_T soffset; /**< (4) reserved */
-  __INT_T lstride; /**< (5) section index multiplier */
-  __INT_T ubound;  /**< (6) upper bound */
+  long long lbound;  /**< (1) lower bound */
+  long long extent;  /**< (2) array extent */
+  long long sstride; /**< (3) reserved */
+  long long soffset; /**< (4) reserved */
+  long long lstride; /**< (5) section index multiplier */
+  long long ubound;  /**< (6) upper bound */
 };
-
-/* type descriptor forward reference. Declared in type.h */
-typedef struct type_desc TYPE_DESC;
 
 /** \brief Fortran descriptor header 
  *
@@ -141,25 +128,18 @@ typedef struct type_desc TYPE_DESC;
  * \ref DESC_HDR_GSIZE, \ref DESC_HDR_LBASE, and \ref DESC_HDR_GBASE.
  *
  */
-struct F90_Desc {
-
-  __INT_T tag;                 /**< (1) tag field; usually \ref __DESC 
-                                        (see also _DIST_TYPE) */
-  __INT_T rank;                /**< (2) array section rank */
-  __INT_T kind;                /**< (3) array base type */
-  __INT_T len;                 /**< (4) byte length of base type */
-  __INT_T flags;               /**< (5) descriptor flags */
-  __INT_T lsize;               /**< (6) local array section size */
-  __INT_T gsize;               /**< (7) global array section size 
-                                        (usually same as \ref lsize) */
-  __INT_T lbase;               /**< (8) index offset section adjustment */
-  POINT(__INT_T, gbase);       /**< (9) global offset of first element of 
-                                        section (usually 0) */
-  POINT(TYPE_DESC, dist_desc); /**<     When set, this is a pointer to the 
-                                        object's type descriptor */
-  F90_DescDim dim[MAXDIMS];    /**<     F90 dimensions (Note: We append
-                                        \ref rank number of F90_DescDim 
-                                        structures to an F90_Desc structure) */
-};
+typedef struct F90_Desc {
+  long long tag;                 /**< (1) tag field; usually \ref __DESC (see also _DIST_TYPE) */
+  long long rank;                /**< (2) array section rank */
+  long long kind;                /**< (3) array base type */
+  long long len;                 /**< (4) byte length of base type */
+  long long flags;               /**< (5) descriptor flags */
+  long long lsize;               /**< (6) local array section size */
+  long long gsize;               /**< (7) global array section size (usually same as \ref lsize) */
+  long long lbase;               /**< (8) index offset section adjustment */
+  long long * gbase;             /**< (9) global offset of first element of section (usually 0) */
+  void * dist_desc;              /**< When set, this is a pointer to the object's type descriptor */
+  struct F90_DescDim dim[MAXDIMS];   /**< F90 dimensions (Note: We append rank number of F90_DescDim structures to an F90_Desc structure) */
+} F90_Desc_la;
 
 #endif // FLANGF90_H_
