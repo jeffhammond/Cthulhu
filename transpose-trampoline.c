@@ -3,7 +3,7 @@
 
 #include <ISO_Fortran_binding.h>
 
-#include "pgif90.h"
+#include "flangf90.h"
 
 #include "trampoline.h"
 
@@ -17,7 +17,7 @@ void transpose_colon_trampoline(int32_t block_order, CFI_cdesc_t * dTA, CFI_cdes
     double * restrict TA = dTA->base_addr;
     double * restrict TB = dTB->base_addr;
     F90_Desc_la pTA={0}, pTB={0};
-    cfi_to_pgi_desc(dTA,&pTA);
-    cfi_to_pgi_desc(dTB,&pTB);
+    cfi_to_flang_desc(dTA,&pTA);
+    cfi_to_flang_desc(dTB,&pTB);
     transpose_colon(block_order, TA, TB, &pTA, &pTB);
 }

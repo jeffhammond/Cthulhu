@@ -3,9 +3,9 @@
 
 #include <ISO_Fortran_binding.h>
 
-#include "pgif90.h"
+#include "flangf90.h"
 
-static inline int cfi_to_pgi_kind(CFI_type_t type)
+static inline int cfi_to_flang_kind(CFI_type_t type)
 {
          if (type==CFI_type_signed_char)          return 14;
     else if (type==CFI_type_size_t)               return 26;
@@ -20,7 +20,7 @@ static inline int cfi_to_pgi_kind(CFI_type_t type)
     else                                          return -1;
 }
 
-static inline void cfi_to_pgi_desc(const CFI_cdesc_t * d, F90_Desc_la * p)
+static inline void cfi_to_flang_desc(const CFI_cdesc_t * d, F90_Desc_la * p)
 {
     // this is the ABI version (?)
     p->tag  = 35;
@@ -33,7 +33,7 @@ static inline void cfi_to_pgi_desc(const CFI_cdesc_t * d, F90_Desc_la * p)
     }
 
     // convert CFI types to PGI types
-    p->kind = cfi_to_pgi_kind(d->type);
+    p->kind = cfi_to_flang_kind(d->type);
 
     // size of an element in bytes
     const int len = p->len  = d->elem_len;

@@ -3,7 +3,7 @@
 
 #include <ISO_Fortran_binding.h>
 
-#include "pgif90.h"
+#include "flangf90.h"
 
 #include "trampoline.h"
 
@@ -33,9 +33,9 @@ void nstream_colon_trampoline(int64_t length, double scalar,
     //nstream_star(length, scalar, A, B, C);
 #else
     F90_Desc_la pA={0}, pB={0}, pC={0};
-    cfi_to_pgi_desc(dA,&pA);
-    cfi_to_pgi_desc(dB,&pB);
-    cfi_to_pgi_desc(dC,&pC);
+    cfi_to_flang_desc(dA,&pA);
+    cfi_to_flang_desc(dB,&pB);
+    cfi_to_flang_desc(dC,&pC);
     nstream_colon(length, scalar, A, B, C, &pA, &pB, &pC);
 #endif
 }
