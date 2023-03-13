@@ -99,7 +99,7 @@ program main
 
   call co_sum(asum)
 
-  deallocate( A,B,C )
+  deallocate( B,C )
 
   if (abs(asum) .gt. epsilon) then
     if (me.eq.1) then
@@ -119,6 +119,8 @@ program main
               'Avg time (s): ', avgtime
     endif
   endif
+
+  deallocate(A)
 
 end program main
 
